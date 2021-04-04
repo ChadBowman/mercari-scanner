@@ -77,8 +77,13 @@ def parse_config():
 def build_alerters(config):
     alerters = []
     if config.has_section('slack'):
-        slack = SlackAlerter(config['slack']['token'], config['slack']['channel'])
-        alerters.append(slack)
+        token = config['slack']['token']
+        channel = config['slack']['channel']
+        if token == 'xoxb-blah-blah':
+            log.warn('Please provide your own Slack API token')
+        else:
+            slack = SlackAlerter(token, channel)
+            alerters.append(slack)
     else:
         log.info('No Slack configuration detected')
 
