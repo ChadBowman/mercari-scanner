@@ -79,7 +79,7 @@ def main():
     args = parse_args()
 
     alerters = []
-    if config.get('slack', None):
+    if config.has_section('slack'):
         slack = SlackAlerter(config['slack']['token'], config['slack']['channel'])
         alerters.append(slack)
     else:

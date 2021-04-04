@@ -41,5 +41,5 @@ class SlackAlerter(Slack):
         self.channel = channel
 
     def alert(self, text):
-        log.info('Alerting, {text}')
+        log.info(f"Alerting: {text}")
         self.send_message(self.channel, text)
