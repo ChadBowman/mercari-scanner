@@ -1,0 +1,4 @@
+config.ini
+items.json
+__pycache__/
+*.py[cod]

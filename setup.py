@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup(
     name='mercari-scanner',
-    version='0.1',
+    version='0.1.0',
     author='Chad Bowman',
     packages=find_packages(),
     install_requires=[
