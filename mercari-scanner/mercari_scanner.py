@@ -1,4 +1,5 @@
 import os
+import sys
 import argparse
 import logging
 import configparser
@@ -52,8 +53,15 @@ class MercariScanner:
         return deferred
 
 
+class HelpParser(argparse.ArgumentParser):
+    def error(self, message):
+        sys.stderr.write(f"error: {message}" + '\n')
+        self.print_help()
+        sys.exit(2)
+
+
 def parse_args():
-    parser = argparse.ArgumentParser()
+    parser = HelpParser()
     parser.add_argument('keyword', help='Mercari search keyword')
     parser.add_argument('--min-price',
                         help='Amount in dollars to filter out items less than min-price',
@@ -99,11 +107,13 @@ def alert(alerters, message):
 
 
 def remove_file(file_name):
-    if os.path.exists(file_name):
+    if file_name and os.path.exists(file_name):
         os.remove(file_name)
 
 
 def main():
+    items_file_name = None
+    alerters = []
     try:
         config = parse_config()
         args = parse_args()
@@ -125,7 +135,8 @@ def main():
         alert(alerters, f":warning: unhandled exception: {e}")
     finally:
         remove_file(items_file_name)
-        alert(alerters, f":octagonal_sign: {args.keyword} scanning stopped")
+        if alerters and args:
+            alert(alerters, f":octagonal_sign: {args.keyword} scanning stopped")
 
 
 if __name__ == "__main__":

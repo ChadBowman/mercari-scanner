@@ -16,6 +16,23 @@ channel = mercari
 
 ## Usage
 
+```
+usage: mercari_scanner.py [-h] [--min-price MIN_PRICE] [--max-price MAX_PRICE] [--delay DELAY] keyword
+
+positional arguments:
+  keyword               Mercari search keyword
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --min-price MIN_PRICE
+                        Amount in dollars to filter out items less than min-price
+  --max-price MAX_PRICE
+                        Amount in dollars to filter out items more than max-price
+  --delay DELAY         Time in seconds to wait before the next scan. Default: 60s
+```
+
+## Examples
+
 ### Docker
 ```
 docker pull chadbowman0/mercari-scanner:latest
