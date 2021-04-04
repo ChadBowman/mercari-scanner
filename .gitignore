@@ -1,3 +1,9 @@
-items.json
 __pycache__/
 *.py[cod]
+*$py.class
+
+.Python
+*.egg-info/
+*.egg
+
+*.json
