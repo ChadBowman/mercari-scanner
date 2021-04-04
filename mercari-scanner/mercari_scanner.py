@@ -68,16 +68,13 @@ def parse_args():
     return parser.parse_args()
 
 
-def parse_configs():
+def parse_config():
     config = configparser.ConfigParser()
     config.read('config.ini')
     return config
 
 
-def main():
-    config = parse_configs()
-    args = parse_args()
-
+def build_alerters(config):
     alerters = []
     if config.has_section('slack'):
         slack = SlackAlerter(config['slack']['token'], config['slack']['channel'])
@@ -85,19 +82,45 @@ def main():
     else:
         log.info('No Slack configuration detected')
 
-    min = None
-    max = None
-    if args.min_price:
-        min = int(args.min_price * 100)
-    if args.max_price:
-        max = int(args.max_price * 100)
+    if not alerters:
+        log.warn('No alerters configured')
 
-    items_file_name = 'items.json'
-    if os.path.exists(items_file_name):
-        os.remove(items_file_name)
+    return alerters
 
-    scanner = MercariScanner(args.keyword, min, max, args.delay, items_file_name, alerters)
-    scanner.start()
+
+def alert(alerters, message):
+    for alerter in alerters:
+        alerter.alert(message)
+
+
+def remove_file(file_name):
+    if os.path.exists(file_name):
+        os.remove(file_name)
+
+
+def main():
+    try:
+        config = parse_config()
+        args = parse_args()
+        alerters = build_alerters(config)
+
+        min = None
+        max = None
+        if args.min_price:
+            min = int(args.min_price * 100)  # multiplied by 100 because Mercari search uses pennies
+        if args.max_price:
+            max = int(args.max_price * 100)
+
+        items_file_name = f"{hash(args.keyword)}.json"
+        remove_file(items_file_name)
+        alert(alerters, f":scan: {args.keyword} scanning started")
+        scanner = MercariScanner(args.keyword, min, max, args.delay, items_file_name, alerters)
+        scanner.start()
+    except Exception as e:
+        alert(alerters, f":warning: unhandled exception: {e}")
+    finally:
+        remove_file(items_file_name)
+        alert(alerters, f":octagonal_sign: {args.keyword} scanning stopped")
 
 
 if __name__ == "__main__":

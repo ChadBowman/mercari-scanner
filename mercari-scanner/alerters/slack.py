@@ -20,8 +20,13 @@ class Slack:
         channel_id = self.channels.get(channel, None)
         if not channel_id:
             result = self._get('conversations.list')
+            log.info(result.json())
             channels = result.json()['channels']
-            channel_id = list(filter(lambda x: x['name'] == channel, channels))[0]['id']
+            channels_with_name = list(filter(lambda x: x['name'] == channel, channels))
+            if not channels_with_name:
+                log.error(f"No channel found with name: {channel}")
+            else:
+                channel_id = channels_with_name[0]['id']
         return channel_id
 
     def _get(self, path):
