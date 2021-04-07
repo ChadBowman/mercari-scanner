@@ -55,13 +55,13 @@ class MercariSpider(scrapy.Spider):
         return f"{self.base_url}/search?{'&'.join(params)}"
 
     def _parse_price(self, item):
-        discounted_price = item.css('span.withMetaInfo__DiscountPrice-sc-1j2k5ln-9::text').re(r'\d+')
-        price = item.css('span.withMetaInfo__Price-sc-1j2k5ln-3::text').re(r'\d+')
+        discounted_price = item.css('span.withMetaInfo__DiscountPrice-sc-1j2k5ln-9::text').re(r'\d+,?\d*')
+        price = item.css('span.withMetaInfo__Price-sc-1j2k5ln-3::text').re(r'\d+,?\d*')
         best_price = None
         if discounted_price:
-            best_price = discounted_price[0]
+            best_price = discounted_price[0].replace(',', '')
         elif price:
-            best_price = price[0]
+            best_price = price[0].replace(',', '')
         return best_price
 
     def _parse_id(self, url):

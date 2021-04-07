@@ -6,6 +6,13 @@
 
 ### Slack
 
+Pass the --slack-token argument:
+```
+mercari-scanner --slack-token xoxb-blah-blah --slack-channel mercari "pokemon pillows"
+```
+
+or
+
 Modify `config.ini` to include your Slack API token and the channel you want to alert to:
 
 ```
@@ -17,7 +24,7 @@ channel = mercari
 ## Usage
 
 ```
-usage: mercari_scanner.py [-h] [--min-price MIN_PRICE] [--max-price MAX_PRICE] [--delay DELAY] keyword
+usage: mercari_scanner.py [-h] [--min-price MIN_PRICE] [--max-price MAX_PRICE] [--delay DELAY] [--slack-token SLACK_TOKEN] [--slack-channel SLACK_CHANNEL] [--tiers TIERS] [--start-stop-alert | --no-start-stop-alert] keyword
 
 positional arguments:
   keyword               Mercari search keyword
@@ -28,7 +35,15 @@ optional arguments:
                         Amount in dollars to filter out items less than min-price
   --max-price MAX_PRICE
                         Amount in dollars to filter out items more than max-price
-  --delay DELAY         Time in seconds to wait before the next scan. Default: 60s
+  --delay DELAY         Time in seconds to wait before the next scan (default: 60)
+  --slack-token SLACK_TOKEN
+                        Slack API token
+  --slack-channel SLACK_CHANNEL
+                        Slack channel to publish alerts to
+  --tiers TIERS         Semi-colon-separated key-value pairs that define tier message templates. A template will be used if an item is less than or equal to the amount.Example: "420=Wow! {name} is an amazing deal! Only ${price};
+                        1000=Hey check out this less cool deal{newline}{url}". Available variables: price, name, url, newline
+  --start-stop-alert, --no-start-stop-alert
+                        Alert when scanner starts and stops (default: True)
 ```
 
 ## Examples
@@ -36,7 +51,7 @@ optional arguments:
 ### Docker
 ```
 docker pull chadbowman0/mercari-scanner:latest
-docker run chadbowman0/mercari-scanner:latest --min-price 300 --max-price 1010 --delay 30 5700xt
+docker run chadbowman0/mercari-scanner:latest --slack-token xoxb-blah-blah --min-price 300 --max-price 1010 --delay 30 5700xt
 ```
 
 ### Local

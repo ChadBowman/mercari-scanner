@@ -21,7 +21,8 @@ class MercariScanner:
             max_price,
             delay,
             out,
-            alerters=[]
+            alerters,
+            tiers
     ):
         self.delay = delay
         self.out = out
@@ -33,7 +34,7 @@ class MercariScanner:
             'mercari.min_price': min_price,
             'mercari.max_price': max_price
         })
-        self.alerter = Alerter(alerters, out, delay / 3)
+        self.alerter = Alerter(alerters, out, delay / 3, tiers)
 
     def start(self):
         self._crawl(None)
@@ -70,9 +71,22 @@ def parse_args():
                         help='Amount in dollars to filter out items more than max-price',
                         type=float)
     parser.add_argument('--delay',
-                        help='Time in seconds to wait before the next scan. Default: 60s',
+                        help='Time in seconds to wait before the next scan (default: %(default)s)',
                         type=int,
                         default=60)
+    parser.add_argument('--slack-token', help='Slack API token')
+    parser.add_argument('--slack-channel',
+                        help='Slack channel to publish alerts to')
+    parser.add_argument('--tiers',
+                        help='Semi-colon-separated key-value pairs that define tier message templates. '
+                             'A template will be used if an item is less than or equal to the amount.'
+                             'Example: "420=Wow! {name} is an amazing deal! Only ${price}; '
+                             '1000=Hey check out this less cool deal{newline}{url}". '
+                             'Available variables: price, name, url, newline')
+    parser.add_argument('--start-stop-alert',
+                        help='Alert when scanner starts and stops',
+                        default=True,
+                        action=argparse.BooleanOptionalAction)
     return parser.parse_args()
 
 
@@ -82,16 +96,34 @@ def parse_config():
     return config
 
 
-def build_alerters(config):
-    alerters = []
+def build_messages(config, args):
+    messages = {}
+    if config.has_section('messages'):
+        messages = config['messages']
+    return messages
+
+
+def build_slack_alerter(config, args):
     if config.has_section('slack'):
         token = config['slack']['token']
         channel = config['slack']['channel']
-        if token == 'xoxb-blah-blah':
-            log.warn('Please provide your own Slack API token')
-        else:
-            slack = SlackAlerter(token, channel)
-            alerters.append(slack)
+    # override config file with args
+    if args.slack_token:
+        token = args.slack_token
+    if args.slack_channel:
+        channel = args.slack_channel
+
+    if not token and not channel:
+        return None
+
+    return SlackAlerter(token, channel)
+
+
+def build_alerters(config, args):
+    alerters = []
+    slack = build_slack_alerter(config, args)
+    if slack:
+        alerters.append(slack)
     else:
         log.info('No Slack configuration detected')
 
@@ -99,6 +131,15 @@ def build_alerters(config):
         log.warn('No alerters configured')
 
     return alerters
+
+
+def build_tiers(config, args):
+    tiers = {}
+    if config.has_section('tiers'):
+        tiers = config['tiers']
+    if args.tiers:
+        tiers = dict(s.split('=') for s in args.tiers.split(';'))
+    return tiers
 
 
 def alert(alerters, message):
@@ -113,11 +154,13 @@ def remove_file(file_name):
 
 def main():
     items_file_name = None
+    args = None
     alerters = []
     try:
         config = parse_config()
         args = parse_args()
-        alerters = build_alerters(config)
+        alerters = build_alerters(config, args)
+        tiers = build_tiers(config, args)
 
         min = None
         max = None
@@ -128,14 +171,23 @@ def main():
 
         items_file_name = f"{hash(args.keyword)}.json"
         remove_file(items_file_name)
-        alert(alerters, f":scan: {args.keyword} scanning started")
-        scanner = MercariScanner(args.keyword, min, max, args.delay, items_file_name, alerters)
+        if args.start_stop_alert:
+            alert(alerters, f":scan: {args.keyword} scanning started")
+
+        scanner = MercariScanner(args.keyword,
+                                 min,
+                                 max,
+                                 args.delay,
+                                 items_file_name,
+                                 alerters,
+                                 tiers)
         scanner.start()
     except Exception as e:
+        log.exception(e)
         alert(alerters, f":warning: unhandled exception: {e}")
     finally:
         remove_file(items_file_name)
-        if alerters and args:
+        if args and args.start_stop_alert:
             alert(alerters, f":octagonal_sign: {args.keyword} scanning stopped")
 
 
