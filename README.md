@@ -48,16 +48,22 @@ optional arguments:
 
 ## Examples
 
+### pip
+```
+pip install mercari-scanner
+mercari-scanner --slack-token xoxb-blah-blah "AMD 5700XT"
+```
+
 ### Docker
 ```
 docker pull chadbowman0/mercari-scanner:latest
-docker run chadbowman0/mercari-scanner:latest --slack-token xoxb-blah-blah --min-price 300 --max-price 1010 --delay 30 5700xt
+docker run chadbowman0/mercari-scanner:latest --slack-token xoxb-blah-blah "AMD 5700XT"
 ```
 
-### Local
+### Local (with config.ini)
 ```
 git clone https://github.com/ChadBowman/mercari-scanner.git ~/mercari-scanner
 python3 -m venv env && source env/bin/activate
 python3 -m pip install --upgrade pip && python3 -m pip install -r requirements.txt
-python ~/mercari-scanner/mercari-scanner/mercari_scanner.py --min-price 10 --max-price 1000 --delay 30 5700xt
+python ~/mercari-scanner/mercari-scanner/mercari_scanner.py "AMD 5700XT"
 ```
