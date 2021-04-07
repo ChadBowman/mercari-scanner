@@ -13,15 +13,20 @@ class Slack:
 
     def send_message(self, channel, text):
         id = self._fetch_channel_id(channel)
+        if not id:
+            return
         body = {'channel': id, 'text': text}
         self._post('chat.postMessage', body)
 
     def _fetch_channel_id(self, channel):
         channel_id = self.channels.get(channel, None)
         if not channel_id:
-            result = self._get('conversations.list')
-            log.info(result.json())
-            channels = result.json()['channels']
+            result = self._get('conversations.list').json()
+            if not result['ok'] or not result['channel']:
+                log.error("There was an issue fetching the channel id, please double-check "
+                          "your credentials and try again")
+                return None
+            channels = result['channels']
             channels_with_name = list(filter(lambda x: x['name'] == channel, channels))
             if not channels_with_name:
                 log.error(f"No channel found with name: {channel}")
