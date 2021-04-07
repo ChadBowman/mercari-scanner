@@ -7,7 +7,7 @@ README = (HERE / 'README.md').read_text()
 
 setup(
     name='mercari-scanner',
-    version='0.1.0',
+    version='0.1.1',
     author='Chad Bowman',
     author_email='chad.bowman0+github@gmail.com',
     description='Scan and receive alerts for newly listed items on Mercari',
