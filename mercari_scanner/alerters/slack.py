@@ -22,7 +22,7 @@ class Slack:
         channel_id = self.channels.get(channel, None)
         if not channel_id:
             result = self._get('conversations.list').json()
-            if not result['ok'] or not result['channel']:
+            if not result['ok'] or not result['channels']:
                 log.error("There was an issue fetching the channel id, please double-check "
                           "your credentials and try again")
                 return None

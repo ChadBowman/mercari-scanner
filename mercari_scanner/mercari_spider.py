@@ -1,7 +1,9 @@
-
+import logging
 import scrapy
 import re
 from twisted.internet import reactor
+
+log = logging.getLogger(__name__)
 
 
 class MercariSpider(scrapy.Spider):
@@ -27,19 +29,30 @@ class MercariSpider(scrapy.Spider):
             yield reactor.maybeDeferred(self.engine.stop)
 
     def parse(self, response):
-        for item in response.css('div.Flex__Box-ych44r-1'):
+        # each item on page contains "Grid2__Col" in its div class
+        # TODO use selector to avoid future breakage
+        items = response.css('div.Grid2__Col-mpt2p4-0')
+        if not items:
+            log.warn('No items found! It is highly possible that we need to use a selector to source '
+                     'items. If this happens for each search, please report this as a bug')
+
+        for item in items:
+            # TODO use selector to avoid future breakage
             url = item.css('div.Flex__Box-ych44r-1 a::attr(href)').get()
             item_id = self._parse_id(url)
-            name = item.css('div.withMetaInfo__EllipsisText-sc-1j2k5ln-12::text').get()
+            # TODO use selector to avoid future breakage
+            name = item.css('div.Flex__Box-ych44r-1 a::attr(alt)').get()
             price = self._parse_price(item)
 
-            if name and price:
+            if url and item_id and name and price:
                 yield {
                     'id': item_id,
                     'name': name,
                     'url': f"{self.base_url}{url}",
                     'price': price
                 }
+            else:
+                log.error(f'Unable to parse fields, id: {id} name: {name} url: {url} price: {price}')
 
     def _build_url(self):
         keyword = f"keyword={self.settings.get('mercari.keyword')}"
@@ -55,13 +68,19 @@ class MercariSpider(scrapy.Spider):
         return f"{self.base_url}/search?{'&'.join(params)}"
 
     def _parse_price(self, item):
-        discounted_price = item.css('span.withMetaInfo__DiscountPrice-sc-1j2k5ln-9::text').re(r'\d+,?\d*')
-        price = item.css('span.withMetaInfo__Price-sc-1j2k5ln-3::text').re(r'\d+,?\d*')
+        discount_selector = './/span[contains(@class, "withMetaInfo__DiscountPrice")]/text()'
+        discounted_price = item.xpath(discount_selector).getall()
+
+        price_selection = './/span[contains(@class, "withMetaInfo__Price")]/text()'
+        price = item.xpath(price_selection).getall()
         best_price = None
+
+        # if the price is discounted, the normal price will not be present
         if discounted_price:
-            best_price = discounted_price[0].replace(',', '')
+            # discounted_price has two elements. One for '$' and another for the price
+            best_price = discounted_price[1].replace(',', '')
         elif price:
-            best_price = price[0].replace(',', '')
+            best_price = price[1].replace(',', '')
         return best_price
 
     def _parse_id(self, url):

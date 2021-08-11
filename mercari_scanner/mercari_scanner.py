@@ -48,4 +48,3 @@ class MercariScanner:
         deferred.addCallback(lambda results: os.remove(self.out))
         deferred.addCallback(self._crawl)
         return deferred
-

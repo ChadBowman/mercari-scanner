@@ -47,7 +47,7 @@ def parse_args():
 
 def parse_config():
     config = configparser.ConfigParser()
-    config.read('config.ini')
+    config.read('mercari-scanner/config.ini')
     return config
 
 
