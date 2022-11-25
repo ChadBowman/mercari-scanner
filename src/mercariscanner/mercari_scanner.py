@@ -3,8 +3,8 @@ import logging
 from scrapy.crawler import CrawlerProcess
 from twisted.internet import reactor
 from twisted.internet.task import deferLater
-from src.mercari_spider import MercariSpider
-from src.alerters.alerter import Alerter
+from mercariscanner.mercari_spider import MercariSpider
+from mercariscanner.alerters.alerter import Alerter
 
 log = logging.getLogger('mercari_scanner')
 

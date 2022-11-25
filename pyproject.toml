@@ -1,0 +1,20 @@
+[project]
+name = "mercari-scanner"
+version = "0.1.2"
+authors = [
+  { name="Chad Bowman", email="chad.bowman0+github@gmail.com" },
+]
+description = "Scan and receive alerts for newly listed items on Mercari"
+readme = "README.md"
+requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License"
+]
+dependencies = [
+  "requests >= 2.25.1",
+  "scrapy >= 2.4.1"
+]
+
+[project.urls]
+"Homepage" = "https://github.com/ChadBowman/mercari-scanner"
