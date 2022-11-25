@@ -59,6 +59,7 @@ def build_messages(config, args):
 
 
 def build_slack_alerter(config, args):
+    token, channel = None, None
     if config.has_section('slack'):
         token = config['slack']['token']
         channel = config['slack']['channel']

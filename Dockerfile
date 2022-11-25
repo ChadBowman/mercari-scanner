@@ -8,6 +8,6 @@ ENV VIRTUAL_ENV=/opt/venv
 RUN python3 -m venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-RUN pip install -r requirements.txt
+RUN pip install .
 
-ENTRYPOINT [ "python", "mercari-scanner/mercari_scanner.py" ]
+ENTRYPOINT [ "python3", "-m", "mercariscanner" ]
