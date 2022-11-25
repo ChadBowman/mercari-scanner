@@ -3,8 +3,8 @@ import sys
 import argparse
 import logging
 import configparser
-from mercari_scanner.mercari_scanner import MercariScanner
-from mercari_scanner.alerters.slack import SlackAlerter
+from src.mercari_scanner import MercariScanner
+from src.alerters.slack import SlackAlerter
 
 log = logging.getLogger(__name__)
 

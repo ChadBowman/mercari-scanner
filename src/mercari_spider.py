@@ -9,6 +9,10 @@ log = logging.getLogger(__name__)
 class MercariSpider(scrapy.Spider):
     name = 'mercarispider'
     base_url = 'https://www.mercari.com'
+    custom_settings = {
+        "USER_AGENT": "Mac OS X/10.6.8 (10K549); ExchangeWebServices/1.3 (61); Mail/4.6 (1085)",
+        "COOKIES_ENABLED": False
+    }
 
     def __init__(self, *args, **kwargs):
         self.timeout = int(kwargs.pop('timeout', '60'))

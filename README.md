@@ -63,6 +63,5 @@ docker run chadbowman0/mercari-scanner:latest --slack-token xoxb-blah-blah "AMD 
 ### Local (with config.ini)
 ```
 git clone https://github.com/ChadBowman/mercari-scanner.git ~/mercari-scanner
-cd ~/
 python3 ~/mercari-scanner "AMD 5700XT"
 ```
