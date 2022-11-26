@@ -7,13 +7,13 @@
 ### pip
 ```
 pip install mercari-scanner
-python3 -m mercariscanner --slack-token xoxb-blah-blah -h 
+python3 -m mercariscanner "RTX 3080"
 ```
 
 ### Docker
 ```
 docker pull chadbowman0/mercari-scanner:latest
-docker run chadbowman0/mercari-scanner:latest --slack-token xoxb-blah-blah -h
+docker run chadbowman0/mercari-scanner:latest "RTX 3080"
 ```
 
 ### Local (with config.ini)
@@ -21,6 +21,7 @@ docker run chadbowman0/mercari-scanner:latest --slack-token xoxb-blah-blah -h
 git clone https://github.com/ChadBowman/mercari-scanner.git ~/mercari-scanner
 python3 -m venv ~/mercari-scanner/env && source ~/mercari-scanner/env/bin/activate
 python3 -m pip install ~/mercari-scanner
+python3 -m mercariscanner "RTX 3080"
 ```
 
 ## Usage
@@ -45,7 +46,7 @@ options:
   --slack-channel SLACK_CHANNEL
                         Slack channel to publish alerts to
   --tiers TIERS         Semi-colon-separated key-value pairs that define tier message templates. A template will be used if an item
-                        is less than or equal to the amount.Example: "420=Wow! {name} is an amazing deal! Only ${price}; 1000=Hey
+                        is less than or equal to the amount. Example: "420=Wow! {name} is an amazing deal! Only ${price}; 1000=Hey
                         check out this less cool deal{newline}{url}". Available variables: price, name, url, newline
   --start-stop-alert, --no-start-stop-alert
                         Alert when scanner starts and stops
@@ -55,9 +56,9 @@ options:
 
 ### Slack
 
-Pass the --slack-token argument:
+Pass the --slack-token and --slack-channel arguments:
 ```
-python3 -m mercariscanner --slack-token xoxb-blah-blah --slack-channel mercari "pokemon pillows"
+python3 -m mercariscanner --slack-token xoxb-blah-blah --slack-channel mercari "Beavis and Butt-Head DVD"
 ```
 
 or
