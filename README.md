@@ -62,7 +62,7 @@ python3 -m mercariscanner --slack-token xoxb-blah-blah --slack-channel mercari "
 
 or
 
-Modify `config.ini` to include your Slack API token and the channel you want to alert to:
+Modify `config.ini` to include your Slack API bot token and the channel you want to alert to:
 
 ```
 [slack]

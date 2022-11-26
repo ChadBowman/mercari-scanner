@@ -34,7 +34,7 @@ def parse_args():
                         help='Slack channel to publish alerts to')
     parser.add_argument('--tiers',
                         help='Semi-colon-separated key-value pairs that define tier message templates. '
-                             'A template will be used if an item is less than or equal to the amount.'
+                             'A template will be used if an item is less than or equal to the amount. '
                              'Example: "420=Wow! {name} is an amazing deal! Only ${price}; '
                              '1000=Hey check out this less cool deal{newline}{url}". '
                              'Available variables: price, name, url, newline')
